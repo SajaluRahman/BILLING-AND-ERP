@@ -275,29 +275,31 @@ export default function ProductsPage() {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-popover/95 backdrop-blur-xl border border-border shadow-2xl rounded-full px-6 py-3 flex items-center gap-4 text-xs"
+            className="fixed bottom-[84px] md:bottom-6 left-1/2 -translate-x-1/2 z-40 bg-popover/95 backdrop-blur-xl border border-border/80 shadow-2xl rounded-2xl sm:rounded-full px-3.5 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between sm:justify-start gap-2 sm:gap-4 text-[11px] sm:text-xs w-[94vw] sm:w-auto max-w-lg"
           >
-            <span className="font-bold text-foreground">
-              {selectedIds.length} Products Selected
+            <span className="font-bold text-foreground shrink-0">
+              {selectedIds.length} Selected
             </span>
 
-            <div className="h-4 w-px bg-border" />
+            <div className="h-4 w-px bg-border shrink-0" />
 
-            {/* Bulk Edit Modal Trigger */}
-            <BulkEditModal
-              selectedCount={selectedIds.length}
-              onBulkUpdate={handleBulkUpdate}
-              onClearSelection={() => setSelectedIds([])}
-            />
+            <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+              {/* Bulk Edit Modal Trigger */}
+              <BulkEditModal
+                selectedCount={selectedIds.length}
+                onBulkUpdate={handleBulkUpdate}
+                onClearSelection={() => setSelectedIds([])}
+              />
 
-            <Button variant="destructive" size="sm" className="h-8" onClick={handleBulkDelete}>
-              <Trash2 className="h-3.5 w-3.5 mr-1" />
-              Delete ({selectedIds.length})
-            </Button>
+              <Button variant="destructive" size="sm" className="h-8 px-2 sm:px-3 text-[11px] sm:text-xs" onClick={handleBulkDelete}>
+                <Trash2 className="h-3.5 w-3.5 sm:mr-1" />
+                <span className="hidden sm:inline">Delete</span> ({selectedIds.length})
+              </Button>
 
-            <Button variant="ghost" size="sm" className="h-8" onClick={() => setSelectedIds([])}>
-              Clear
-            </Button>
+              <Button variant="ghost" size="sm" className="h-8 px-2 text-[11px] sm:text-xs text-muted-foreground" onClick={() => setSelectedIds([])}>
+                Clear
+              </Button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

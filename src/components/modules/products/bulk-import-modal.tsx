@@ -22,6 +22,7 @@ import {
   Sparkles,
   AlertCircle,
 } from "lucide-react";
+import { CameraScanner } from "@/components/shared/camera-scanner";
 import { Product } from "@/types";
 
 interface BulkImportModalProps {
@@ -306,9 +307,29 @@ export function BulkImportModal({ onImportProducts, trigger }: BulkImportModalPr
 
           {/* TAB 2: Scan & Add */}
           <TabsContent value="scan" className="p-6 space-y-4 m-0">
-            <form onSubmit={handleScanBarcode} className="space-y-3">
+            {/* Live Camera Scanner View */}
+            <CameraScanner
+              onScan={(scannedBarcode) => {
+                const newItem = {
+                  id: `scan-${Date.now()}`,
+                  name: `Scanned Product (${scannedBarcode.slice(-4)})`,
+                  sku: `BAR-${scannedBarcode}`,
+                  barcode: scannedBarcode,
+                  brandName: "Scanned Brand",
+                  bottleSize: "1 Litre",
+                  purchasePrice: 45,
+                  sellingPrice: 75,
+                  gstRate: 18,
+                  hsnCode: "2201",
+                  currentStock: 100,
+                };
+                setScannedItems((prev) => [newItem, ...prev]);
+              }}
+            />
+
+            <form onSubmit={handleScanBarcode} className="space-y-3 pt-2 border-t border-border/40">
               <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">Barcode / QR Code Scanner</Label>
+                <Label className="text-xs font-semibold">Manual Barcode / USB Scanner Entry</Label>
                 <div className="flex gap-2">
                   <div className="relative flex-1">
                     <ScanLine className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-blue-500" />
@@ -317,17 +338,13 @@ export function BulkImportModal({ onImportProducts, trigger }: BulkImportModalPr
                       value={barcodeInput}
                       onChange={(e) => setBarcodeInput(e.target.value)}
                       className="pl-9 h-10 text-xs font-mono"
-                      autoFocus
                     />
                   </div>
                   <Button type="submit" className="h-10">
                     <Plus className="h-4 w-4 mr-1" />
-                    Add Scan
+                    Add Code
                   </Button>
                 </div>
-                <p className="text-[10px] text-muted-foreground">
-                  Connect a USB/Bluetooth handheld barcode scanner or type code directly.
-                </p>
               </div>
             </form>
 
@@ -337,7 +354,7 @@ export function BulkImportModal({ onImportProducts, trigger }: BulkImportModalPr
                 <div className="flex items-center justify-between text-xs font-semibold">
                   <span>Scanned Items ({scannedItems.length})</span>
                 </div>
-                <div className="max-h-48 overflow-y-auto border border-border/50 rounded-lg text-xs divide-y divide-border/40">
+                <div className="max-h-40 overflow-y-auto border border-border/50 rounded-lg text-xs divide-y divide-border/40">
                   {scannedItems.map((item) => (
                     <div key={item.id} className="p-2.5 flex justify-between items-center bg-card">
                       <div>
@@ -349,12 +366,7 @@ export function BulkImportModal({ onImportProducts, trigger }: BulkImportModalPr
                   ))}
                 </div>
               </div>
-            ) : (
-              <div className="text-center py-8 border border-dashed rounded-xl text-muted-foreground">
-                <QrCode className="h-8 w-8 mx-auto mb-2 opacity-50 text-blue-500" />
-                <p className="text-xs">No items scanned yet.</p>
-              </div>
-            )}
+            ) : null}
 
             <DialogFooter className="pt-2 border-t border-border/50">
               <Button variant="outline" size="sm" onClick={() => setOpen(false)}>Cancel</Button>
