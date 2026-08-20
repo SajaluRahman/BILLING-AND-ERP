@@ -125,11 +125,13 @@ const navigationGroups: NavGroup[] = [
   },
 ];
 
+const ALL_GROUP_TITLES = navigationGroups.map((g) => g.title);
+
 export function AppSidebar() {
   const pathname = usePathname();
-  const { user, logout, hasPermission } = useAuthStore();
+  const { user, logout } = useAuthStore();
   const { isCollapsed, isMobileOpen, toggle, setMobileOpen } = useSidebarStore();
-  const [expandedGroups, setExpandedGroups] = useState<string[]>(["Overview"]);
+  const [expandedGroups, setExpandedGroups] = useState<string[]>(ALL_GROUP_TITLES);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -231,7 +233,9 @@ export function AppSidebar() {
                   >
                     <div className="space-y-0.5 mt-1">
                       {group.items.map((item) => {
-                        const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+                        const isActive = item.href === "/dashboard"
+                          ? pathname === "/dashboard"
+                          : pathname === item.href || pathname.startsWith(item.href + "/");
                         const Icon = item.icon;
 
                         const link = (

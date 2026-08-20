@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { PageHeader } from "@/components/shared/page-header";
 import { StatsCard } from "@/components/shared/stats-card";
 import {
@@ -22,8 +22,6 @@ import {
   Mail,
   Copy,
   CheckCircle2,
-  ChevronLeft,
-  ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -87,7 +85,6 @@ const RECURRING_CONTRACTS = [
 
 export default function AccountingPage() {
   const [activeTab, setActiveTab] = useState("pl");
-  const tabsContainerRef = useRef<HTMLDivElement>(null);
 
   // Dynamic Assets and Liabilities State
   const [assets, setAssets] = useState<FinancialEntry[]>(INITIAL_ASSETS);
@@ -125,14 +122,6 @@ export default function AccountingPage() {
   // Dynamic Assets & Liabilities Sum
   const totalAssets = assets.reduce((sum, a) => sum + a.amount, 0);
   const totalLiabilities = liabilities.reduce((sum, l) => sum + l.amount, 0);
-
-  // Smooth Tab Scroll
-  const scrollTab = (direction: "left" | "right") => {
-    if (tabsContainerRef.current) {
-      const scrollAmount = direction === "left" ? -140 : 140;
-      tabsContainerRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
-    }
-  };
 
   // Handle Edit Save
   const handleSaveEdit = () => {
@@ -249,7 +238,7 @@ export default function AccountingPage() {
   };
 
   return (
-    <div className="space-y-6 pb-36 md:pb-12">
+    <div className="space-y-6 pb-36 md:pb-12 w-full max-w-full overflow-hidden">
       <PageHeader
         title="Accounting & Financial Suite"
         description="General Ledgers, Dynamic Balance Sheet, GST Portal Filing, Auto-Billing, and Tally Prime Export"
@@ -275,63 +264,37 @@ export default function AccountingPage() {
         <StatsCard title="Net Operating Profit" value={netProfit} format="currency" icon={IndianRupee} iconColor="text-violet-500" iconBg="bg-violet-500/10" delay={150} />
       </div>
 
-      <Card className="border-border/50">
+      <Card className="border-border/50 w-full max-w-full">
         <CardHeader className="pb-3 border-b border-border/40 px-3 sm:px-6">
-          {/* Swipeable Mobile Responsive Tab Bar */}
-          <div className="relative w-full flex items-center">
-            {/* Left Scroll Button (Mobile) */}
-            <button
-              type="button"
-              onClick={() => scrollTab("left")}
-              className="sm:hidden absolute left-0 z-20 flex h-7 w-7 items-center justify-center rounded-full bg-background/95 text-foreground border border-border shadow-md -ml-1"
-              aria-label="Scroll Left"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-
-            {/* Touch Swipeable Container */}
-            <div
-              ref={tabsContainerRef}
-              className="flex items-center gap-1.5 overflow-x-auto scroll-smooth scrollbar-none touch-pan-x p-1.5 w-full max-w-full bg-muted/40 rounded-xl border border-border/40"
-            >
-              {ACCOUNTING_TABS.map((tab) => {
-                const Icon = tab.icon;
-                const isActive = activeTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    onClick={() => setActiveTab(tab.id)}
-                    className={cn(
-                      "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all shrink-0 select-none",
-                      isActive
-                        ? "bg-background text-foreground shadow-sm ring-1 ring-border"
-                        : "text-muted-foreground hover:text-foreground hover:bg-background/50"
-                    )}
-                  >
-                    <Icon className={cn("h-3.5 w-3.5", isActive ? "text-primary" : "text-muted-foreground")} />
-                    <span>{tab.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Right Scroll Button (Mobile) */}
-            <button
-              type="button"
-              onClick={() => scrollTab("right")}
-              className="sm:hidden absolute right-0 z-20 flex h-7 w-7 items-center justify-center rounded-full bg-background/95 text-foreground border border-border shadow-md -mr-1"
-              aria-label="Scroll Right"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </button>
+          {/* Responsive Non-Overlapping Grid on Mobile & Flex Pill Bar on Desktop */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:flex lg:items-center lg:gap-1.5 p-1.5 bg-muted/30 rounded-2xl border border-border/40 w-full gap-1.5">
+            {ACCOUNTING_TABS.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  className={cn(
+                    "flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all shrink-0 select-none cursor-pointer w-full lg:w-auto",
+                    isActive
+                      ? "bg-background text-foreground shadow-sm ring-1 ring-border"
+                      : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+                  )}
+                >
+                  <Icon className={cn("h-3.5 w-3.5 shrink-0", isActive ? "text-primary" : "text-muted-foreground")} />
+                  <span className="truncate">{tab.label}</span>
+                </button>
+              );
+            })}
           </div>
         </CardHeader>
-        <CardContent className="pt-6 px-3 sm:px-6">
+        <CardContent className="pt-6 px-3 sm:px-6 w-full max-w-full">
           {/* TAB 1: PROFIT & LOSS */}
           {activeTab === "pl" && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 max-w-3xl mx-auto">
-              <div className="border rounded-2xl p-4 sm:p-6 bg-card space-y-4 shadow-sm">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 max-w-3xl mx-auto w-full">
+              <div className="border rounded-2xl p-4 sm:p-6 bg-card space-y-4 shadow-sm w-full">
                 <div className="flex justify-between items-center border-b pb-4">
                   <div>
                     <h3 className="font-bold text-sm sm:text-base uppercase tracking-wider">Profit & Loss Statement</h3>
@@ -395,8 +358,7 @@ export default function AccountingPage() {
 
           {/* TAB 2: DYNAMIC BALANCE SHEET */}
           {activeTab === "bs" && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-              {/* Header Box with Responsive Wrapping Badges */}
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 w-full">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-accent/20 p-4 rounded-2xl border border-border/50">
                 <div>
                   <h3 className="font-bold text-sm">Dynamic Balance Sheet Editor</h3>
@@ -551,7 +513,7 @@ export default function AccountingPage() {
 
           {/* TAB 3: GST FILING */}
           {activeTab === "gst" && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 w-full">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="p-4 rounded-xl border border-blue-500/20 bg-blue-500/5 space-y-2">
                   <h4 className="font-bold text-xs text-blue-600 uppercase">GSTR-1 Outward Supplies</h4>
@@ -588,7 +550,7 @@ export default function AccountingPage() {
 
           {/* TAB 4: AUTOMATED BILLING */}
           {activeTab === "auto_billing" && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 w-full">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-violet-500/10 border border-violet-500/20">
                 <div>
                   <h4 className="font-bold text-sm text-violet-950 dark:text-violet-300 flex items-center gap-2">
@@ -597,7 +559,7 @@ export default function AccountingPage() {
                   </h4>
                   <p className="text-xs text-muted-foreground">Auto-generate invoices for commercial water delivery contracts on schedule</p>
                 </div>
-                <Button size="sm" onClick={() => toast.success(`Executed auto-billing cycle! Generated ${RECURRING_CONTRACTS.length} invoices.`)} className="bg-violet-600 hover:bg-violet-700 text-white">
+                <Button size="sm" onClick={() => toast.success(`Executed auto-billing cycle! Generated ${RECURRING_CONTRACTS.length} invoices.`)} className="bg-violet-600 hover:bg-violet-700 text-white shrink-0">
                   <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
                   Run Auto-Billing Cycle Now
                 </Button>
@@ -638,10 +600,10 @@ export default function AccountingPage() {
 
           {/* TAB 5: CA PORTAL */}
           {activeTab === "ca_share" && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 max-w-3xl mx-auto">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 max-w-3xl mx-auto w-full">
               <div className="border border-border/50 rounded-2xl p-4 sm:p-6 bg-card space-y-5 shadow-sm">
                 <div className="flex items-center gap-3 border-b pb-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-500">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-500 shrink-0">
                     <Share2 className="h-5 w-5" />
                   </div>
                   <div>
@@ -692,7 +654,7 @@ export default function AccountingPage() {
 
           {/* TAB 6: TALLY EXPORT */}
           {activeTab === "tally" && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 w-full">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-xl bg-orange-500/10 border border-orange-500/20">
                 <div>
                   <h4 className="font-bold text-sm text-orange-950 dark:text-orange-300 flex items-center gap-2">
