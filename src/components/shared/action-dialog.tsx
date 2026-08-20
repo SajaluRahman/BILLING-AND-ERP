@@ -23,10 +23,12 @@ export interface FieldConfig {
 interface ActionDialogProps {
   title: string;
   description: string;
-  trigger: React.ReactNode;
+  trigger?: React.ReactNode;
   fields: FieldConfig[];
   submitLabel?: string;
   onSuccessMessage?: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function ActionDialog({
@@ -36,10 +38,15 @@ export function ActionDialog({
   fields,
   submitLabel = "Save Record",
   onSuccessMessage,
+  open: controlledOpen,
+  onOpenChange,
 }: ActionDialogProps) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<Record<string, string>>({});
+
+  const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setOpen = onOpenChange || setInternalOpen;
 
   const handleChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -58,8 +65,8 @@ export function ActionDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>{trigger}</DialogTrigger>
+    <Dialog open={isOpen} onOpenChange={setOpen}>
+      {trigger && <DialogTrigger>{trigger}</DialogTrigger>}
       <DialogContent className="sm:max-w-lg max-w-[95vw] border-border/50">
         <DialogHeader>
           <DialogTitle className="text-lg font-bold">{title}</DialogTitle>

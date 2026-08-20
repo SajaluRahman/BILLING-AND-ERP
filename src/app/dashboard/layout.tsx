@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { AppSidebar } from "@/components/layout/sidebar";
 import { Topbar } from "@/components/layout/topbar";
 import { CommandPalette } from "@/components/layout/command-palette";
+import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import { useSidebarStore } from "@/stores/sidebar-store";
 import { useAuthStore } from "@/stores/auth-store";
 import { cn } from "@/lib/utils";
@@ -58,12 +59,13 @@ export default function DashboardLayout({
           )}
         >
           <Topbar />
-          <main className="flex-1 overflow-auto">
+          <main className="flex-1 overflow-auto pb-20 md:pb-0">
             <div className="w-full px-4 py-6 lg:px-8 max-w-[1800px] mx-auto">
               {children}
             </div>
           </main>
         </div>
+        <MobileBottomNav />
         <CommandPalette />
         <Toaster position="top-right" />
       </div>
